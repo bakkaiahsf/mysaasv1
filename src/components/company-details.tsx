@@ -1,0 +1,436 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Building2, 
+  Calendar, 
+  MapPin, 
+  Users, 
+  FileText, 
+  Loader2, 
+  Sparkles,
+  ArrowLeft,
+  ExternalLink,
+  Network,
+  GitBranch,
+  Shield,
+  Clock,
+  Map,
+  Info
+} from "lucide-react";
+import { CompanySearchResult, CompanyProfile } from "@/lib/companies-house";
+import { NetworkGraphVisualization } from "@/components/network-graph";
+import { OwnershipStructureVisualization } from "@/components/ownership-structure";
+import { RiskHeatmapVisualization } from "@/components/risk-heatmap";
+import { TimelineVisualization } from "@/components/timeline-visualization";
+import { GeographicMapping } from "@/components/geographic-mapping";
+
+interface CompanyDetailsProps {
+  company: CompanySearchResult;
+  onBack: () => void;
+}
+
+export function CompanyDetails({ company, onBack }: CompanyDetailsProps) {
+  const [profile, setProfile] = useState<CompanyProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [summarizing, setSummarizing] = useState(false);
+
+  useEffect(() => {
+    fetchCompanyProfile();
+  }, [company.company_number]);
+
+  const fetchCompanyProfile = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/companies/${company.company_number}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch company profile');
+      }
+
+      const data: CompanyProfile = await response.json();
+      setProfile(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateAISummary = async () => {
+    setSummarizing(true);
+    
+    try {
+      const response = await fetch(`/api/companies/${company.company_number}/summarize`, {
+        method: 'POST',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate AI summary');
+      }
+
+      const data = await response.json();
+      setAiSummary(data.summary);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate AI summary');
+    } finally {
+      setSummarizing(false);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'dissolved':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'liquidation':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const formatAddress = (address: CompanyProfile['registered_office_address']) => {
+    if (!address) return 'No address available';
+    
+    const parts = [
+      address.address_line_1,
+      address.address_line_2,
+      address.locality,
+      address.postal_code,
+      address.country
+    ].filter(Boolean);
+    
+    return parts.join(', ');
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin" />
+        <span className="ml-2">Loading company details...</span>
+      </div>
+    );
+  }
+
+  if (error && !profile) {
+    return (
+      <Card className="border-red-200 bg-red-50">
+        <CardContent className="pt-6">
+          <p className="text-red-800">{error}</p>
+          <Button onClick={onBack} variant="outline" className="mt-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Search
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Button onClick={onBack} variant="outline">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Search
+        </Button>
+        
+        <Button 
+          onClick={generateAISummary} 
+          disabled={summarizing}
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+        >
+          {summarizing ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Sparkles className="w-4 h-4 mr-2" />
+          )}
+          {summarizing ? 'Generating...' : 'Generate AI Summary'}
+        </Button>
+      </div>
+
+      {/* Company Header */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div className="space-y-2">
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Building2 className="w-6 h-6 text-primary" />
+                {profile?.company_name || company.title}
+              </CardTitle>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge className={getStatusColor(profile?.company_status || company.company_status)}>
+                  {profile?.company_status || company.company_status}
+                </Badge>
+                <Badge variant="outline">
+                  {profile?.company_type || company.company_type}
+                </Badge>
+              </div>
+            </div>
+            <div className="text-right text-sm text-muted-foreground">
+              <p><strong>Company No:</strong> {company.company_number}</p>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* AI Summary */}
+      {aiSummary && (
+        <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              AI-Powered Company Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="prose prose-sm max-w-none">
+              <div className="whitespace-pre-wrap">{aiSummary}</div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Enhanced Tabbed Interface with Relationship Mapping */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="overview" className="flex items-center gap-1">
+            <Info className="w-4 h-4" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="network" className="flex items-center gap-1">
+            <Network className="w-4 h-4" />
+            Network
+          </TabsTrigger>
+          <TabsTrigger value="ownership" className="flex items-center gap-1">
+            <GitBranch className="w-4 h-4" />
+            Ownership
+          </TabsTrigger>
+          <TabsTrigger value="risk" className="flex items-center gap-1">
+            <Shield className="w-4 h-4" />
+            Risk Analysis
+          </TabsTrigger>
+          <TabsTrigger value="timeline" className="flex items-center gap-1">
+            <Clock className="w-4 h-4" />
+            Timeline
+          </TabsTrigger>
+          <TabsTrigger value="geographic" className="flex items-center gap-1">
+            <Map className="w-4 h-4" />
+            Geographic
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab - Original Company Details */}
+        <TabsContent value="overview" className="mt-6">
+          {profile && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Company Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="w-5 h-5" />
+                    Company Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 gap-3 text-sm">
+                    <div>
+                      <strong>Incorporation Date:</strong>
+                      <p className="flex items-center gap-1 mt-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(profile.date_of_creation).toLocaleDateString()}
+                      </p>
+                    </div>
+                    
+                    {profile.date_of_cessation && (
+                      <div>
+                        <strong>Cessation Date:</strong>
+                        <p className="flex items-center gap-1 mt-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(profile.date_of_cessation).toLocaleDateString()}
+                        </p>
+                      </div>
+                    )}
+
+                    <div>
+                      <strong>Registered Address:</strong>
+                      <p className="flex items-start gap-1 mt-1">
+                        <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                        <span>{formatAddress(profile.registered_office_address)}</span>
+                      </p>
+                    </div>
+
+                    {profile.sic_codes && profile.sic_codes.length > 0 && (
+                      <div>
+                        <strong>SIC Codes:</strong>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {profile.sic_codes.map((code) => (
+                            <Badge key={code} variant="outline" className="text-xs">
+                              {code}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Status Indicators */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    Company Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 gap-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span>Has been liquidated:</span>
+                      <Badge variant={profile.has_been_liquidated ? "destructive" : "secondary"}>
+                        {profile.has_been_liquidated ? "Yes" : "No"}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span>Has charges:</span>
+                      <Badge variant={profile.has_charges ? "outline" : "secondary"}>
+                        {profile.has_charges ? "Yes" : "No"}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span>Insolvency history:</span>
+                      <Badge variant={profile.has_insolvency_history ? "destructive" : "secondary"}>
+                        {profile.has_insolvency_history ? "Yes" : "No"}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {profile.accounts && (
+                    <div className="border-t pt-4">
+                      <strong>Accounts:</strong>
+                      <div className="mt-2 space-y-1 text-sm">
+                        {profile.accounts.next_due && (
+                          <p>Next due: {new Date(profile.accounts.next_due).toLocaleDateString()}</p>
+                        )}
+                        {profile.accounts.last_accounts?.made_up_to && (
+                          <p>Last made up to: {new Date(profile.accounts.last_accounts.made_up_to).toLocaleDateString()}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {profile.confirmation_statement && (
+                    <div className="border-t pt-4">
+                      <strong>Confirmation Statement:</strong>
+                      <div className="mt-2 space-y-1 text-sm">
+                        {profile.confirmation_statement.next_due && (
+                          <p>Next due: {new Date(profile.confirmation_statement.next_due).toLocaleDateString()}</p>
+                        )}
+                        {profile.confirmation_statement.last_made && (
+                          <p>Last made: {new Date(profile.confirmation_statement.last_made).toLocaleDateString()}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Links */}
+          {profile?.links && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ExternalLink className="w-5 h-5" />
+                  Related Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {profile.links.filing_history && (
+                    <Badge variant="outline" className="cursor-pointer">
+                      Filing History
+                    </Badge>
+                  )}
+                  {profile.links.officers && (
+                    <Badge variant="outline" className="cursor-pointer">
+                      Officers
+                    </Badge>
+                  )}
+                  {profile.links.charges && (
+                    <Badge variant="outline" className="cursor-pointer">
+                      Charges
+                    </Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Network Analysis Tab */}
+        <TabsContent value="network" className="mt-6">
+          <NetworkGraphVisualization
+            companyNumber={company.company_number}
+            onNodeClick={(node) => {
+              console.log('Node clicked:', node);
+            }}
+            onEdgeClick={(edge) => {
+              console.log('Edge clicked:', edge);
+            }}
+          />
+        </TabsContent>
+
+        {/* Ownership Structure Tab */}
+        <TabsContent value="ownership" className="mt-6">
+          <OwnershipStructureVisualization
+            companyNumber={company.company_number}
+          />
+        </TabsContent>
+
+        {/* Risk Analysis Tab */}
+        <TabsContent value="risk" className="mt-6">
+          <RiskHeatmapVisualization
+            entityType="company"
+            entityId={company.company_number}
+          />
+        </TabsContent>
+
+        {/* Timeline Tab */}
+        <TabsContent value="timeline" className="mt-6">
+          <TimelineVisualization
+            entityType="company"
+            entityId={company.company_number}
+            onEventClick={(event) => {
+              console.log('Timeline event clicked:', event);
+            }}
+          />
+        </TabsContent>
+
+        {/* Geographic Analysis Tab */}
+        <TabsContent value="geographic" className="mt-6">
+          <GeographicMapping
+            entityType="company"
+            entityId={company.company_number}
+            onAddressClick={(address) => {
+              console.log('Address clicked:', address);
+            }}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
