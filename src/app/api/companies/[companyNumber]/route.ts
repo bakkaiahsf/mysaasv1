@@ -3,10 +3,10 @@ import { companiesHouseAPI } from '@/lib/companies-house';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { companyNumber: string } }
+  { params }: { params: Promise<{ companyNumber: string }> }
 ) {
   try {
-    const companyNumber = params.companyNumber;
+    const { companyNumber } = await params;
 
     if (!companyNumber) {
       return NextResponse.json(

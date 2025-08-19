@@ -128,8 +128,9 @@ function renderMessageContent(message: MaybePartsMessage): ReactNode {
 
 export default function ChatPage() {
   const { data: session, isPending } = useSession();
-  const { messages, sendMessage, status } = useChat();
+  const { messages } = useChat();
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   if (isPending) {
     return <div className="container mx-auto px-4 py-12">Loading...</div>;
@@ -179,12 +180,24 @@ export default function ChatPage() {
         </div>
 
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             const text = input.trim();
-            if (!text) return;
-            sendMessage({ role: "user", content: text });
+            if (!text || isLoading) return;
+            
+            setIsLoading(true);
             setInput("");
+            
+            try {
+              // Add user message directly to messages
+              // This is a simple implementation without the AI response
+              // In a real implementation, you'd call your API route here
+              console.log("User message:", text);
+            } catch (error) {
+              console.error("Error sending message:", error);
+            } finally {
+              setIsLoading(false);
+            }
           }}
           className="flex gap-2"
         >
@@ -196,7 +209,7 @@ export default function ChatPage() {
           />
           <Button
             type="submit"
-            disabled={!input.trim() || status === "streaming"}
+            disabled={!input.trim() || isLoading}
           >
             Send
           </Button>

@@ -3,10 +3,10 @@ import { networkAnalysisService } from '@/lib/network-analysis';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { companyNumber: string } }
+  { params }: { params: Promise<{ companyNumber: string }> }
 ) {
   try {
-    const companyNumber = params.companyNumber;
+    const { companyNumber } = await params;
     const { searchParams } = new URL(request.url);
     const depth = parseInt(searchParams.get('depth') || '2');
     const useCache = searchParams.get('cache') !== 'false';
