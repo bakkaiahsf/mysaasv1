@@ -1,12 +1,23 @@
 {
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
-  "installCommand": "npm install",
+  "installCommand": "npm install --no-package-lock-only",
   "framework": "nextjs",
-  "regions": ["iad1"],
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
   "build": {
     "env": {
-      "NPM_CONFIG_PACKAGE_LOCK": "true"
+      "NPM_CONFIG_PACKAGE_LOCK": "true",
+      "FORCE_NPM": "true",
+      "DISABLE_PNPM": "true",
+      "NPM_CONFIG_FUND": "false",
+      "NPM_CONFIG_AUDIT": "false"
     }
+  },
+  "env": {
+    "FORCE_NPM": "true"
   }
 }
