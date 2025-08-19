@@ -13,9 +13,29 @@ function getBaseURL() {
     : "http://localhost:3000";
 }
 
+console.log("Auth client initializing with baseURL:", getBaseURL());
+
 export const authClient = createAuthClient({
   baseURL: getBaseURL(),
-})
+  fetchOptions: {
+    onError: (context) => {
+      console.error("Auth client error:", context);
+    },
+    onRequest: (context) => {
+      console.log("Auth client request:", context.url);
+    },
+    onSuccess: (context) => {
+      console.log("Auth client success:", context.url);
+    },
+  },
+});
+
+// Log the exported functions to verify they exist
+console.log("Auth client exports:", {
+  signIn: typeof authClient.signIn,
+  signOut: typeof authClient.signOut,
+  useSession: typeof authClient.useSession,
+});
 
 export const {
   signIn,
