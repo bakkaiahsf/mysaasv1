@@ -19,5 +19,6 @@
   },
   "env": {
     "FORCE_NPM": "true"
-  }
+  },
+  "public": true
 }

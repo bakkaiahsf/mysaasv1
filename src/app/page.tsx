@@ -2,20 +2,17 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/use-simple-auth";
 import { UserProfile } from "@/components/auth/user-profile";
-import { Logo } from "@/components/logo";
 import { 
-  Search, 
-  Sparkles, 
+  Building2, 
   Shield, 
-  TrendingUp, 
-  Users, 
   FileText, 
   CheckCircle,
   ArrowRight,
-  Star,
-  Clock
+  Zap,
+  Users,
+  BarChart3
 } from "lucide-react";
 
 export default function Home() {
@@ -24,207 +21,229 @@ export default function Home() {
   if (isPending) {
     return (
       <div className="flex justify-center items-center h-screen">
-        Loading...
+        <Building2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
 
   return (
     <main className="flex-1">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50 py-20">
+      {/* Hero Section - Search First */}
+      <section className="bg-gradient-to-br from-blue-50 via-white to-gray-50 py-20 min-h-screen flex items-center">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <Logo size="lg" className="justify-center mb-8" />
-            <h1 className="text-6xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600">
-              UK Company Intelligence
-              <br />
-              <span className="text-4xl">Made Simple</span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Unlock the power of UK business intelligence with AI-driven insights. Research companies, 
-              analyze competitors, and make informed decisions with comprehensive data from Companies House.
-            </p>
+          <div className="max-w-4xl mx-auto text-center space-y-12">
+            {/* Logo and Title */}
+            <div className="space-y-6">
+              <div className="flex justify-center items-center gap-3 mb-8">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center rounded-lg shadow-lg">
+                  <Building2 className="w-8 h-8 text-white" />
+                </div>
+                <h1 className="text-4xl font-bold text-gray-900">Smart KYB for UK Business</h1>
+              </div>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                Accelerate compliance and fuel growth with intelligent business verification. 
+                <span className="text-blue-600 font-semibold"> Get instant KYB reports</span> powered by AI risk insights.
+              </p>
+            </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
-              {!session ? (
-                <>
-                  <UserProfile />
-                  <p className="text-sm text-gray-500">Free to get started • No credit card required</p>
-                </>
-              ) : (
-                <>
-                  <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg">
-                    <Link href="/dashboard">
-                      Start Exploring <ArrowRight className="ml-2 w-5 h-5" />
-                    </Link>
-                  </Button>
-                  <p className="text-sm text-gray-500">Welcome back, {session.user.name}!</p>
-                </>
+            {/* Main CTA */}
+            <div className="max-w-2xl mx-auto space-y-8">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                {!session?.user ? (
+                  <>
+                    <UserProfile />
+                    <Button variant="outline" size="lg" className="px-8 py-3 text-lg border-blue-200 text-blue-600 hover:bg-blue-50">
+                      View Demo Report
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-lg text-gray-600 mb-4">Welcome back, {session?.user.name || session?.user.email || 'User'}!</p>
+                    <Button 
+                      onClick={() => window.location.href = '/search'}
+                      size="lg" 
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+                    >
+                      Start Company Search
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {!session?.user && (
+                <div className="text-center">
+                  <p className="text-sm text-gray-500 mb-4">Trusted by professionals in banking, fintech, and compliance</p>
+                  <div className="flex justify-center items-center gap-8 text-xs text-gray-400">
+                    <span>🔒 Enterprise Security</span>
+                    <span>📊 Live Data</span>
+                    <span>🤖 AI-Powered</span>
+                  </div>
+                </div>
               )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Services Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Everything You Need for UK Business Intelligence
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Comprehensive KYB Solutions for Modern Business
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              From startup research to competitor analysis, InsightUK provides the tools and data you need to succeed.
+              From due diligence to risk assessment, we provide everything you need to make 
+              confident business decisions with complete regulatory compliance
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-8 rounded-2xl border border-blue-100">
-              <Search className="w-12 h-12 text-blue-600 mb-6" />
-              <h3 className="text-2xl font-semibold mb-4 text-gray-900">Instant Company Search</h3>
-              <p className="text-gray-600 mb-6">
-                Search millions of UK companies by name or registration number. Get instant access to official Companies House data.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="text-center p-8 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg hover:shadow-lg transition-shadow">
+              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <BarChart3 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">Business Intelligence</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Deep company insights with real-time data from Companies House. 
+                Get comprehensive business profiles, financial health indicators, and operational metrics.
               </p>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Real-time data updates</li>
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Advanced search filters</li>
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Export capabilities</li>
-              </ul>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-2xl border border-purple-100">
-              <Sparkles className="w-12 h-12 text-purple-600 mb-6" />
-              <h3 className="text-2xl font-semibold mb-4 text-gray-900">AI-Powered Insights</h3>
-              <p className="text-gray-600 mb-6">
-                Transform raw company data into actionable intelligence with our advanced AI analysis and risk assessment.
+            <div className="text-center p-8 bg-gradient-to-br from-green-50 to-green-100 rounded-lg hover:shadow-lg transition-shadow">
+              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">Ownership Mapping</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Complete visibility into company ownership structures, director networks, and 
+                beneficial ownership changes. Perfect for compliance and due diligence teams.
               </p>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Financial health analysis</li>
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Risk assessment reports</li>
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Competitive intelligence</li>
-              </ul>
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-2xl border border-green-100">
-              <Shield className="w-12 h-12 text-green-600 mb-6" />
-              <h3 className="text-2xl font-semibold mb-4 text-gray-900">Compliance Monitoring</h3>
-              <p className="text-gray-600 mb-6">
-                Stay on top of filing deadlines, compliance status, and regulatory changes for any UK company.
+            <div className="text-center p-8 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg hover:shadow-lg transition-shadow">
+              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">AI Risk Assessment</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Advanced AI algorithms analyze multiple data points to provide intelligent risk scores 
+                and recommendations, helping you make faster, more informed decisions.
               </p>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Filing history tracking</li>
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Deadline notifications</li>
-                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Compliance scoring</li>
-              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Use Cases Section */}
-      <section className="py-20 bg-gray-50">
+      {/* Value Proposition Section */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Trusted by Professionals Across Industries
-            </h2>
-            <p className="text-xl text-gray-600">
-              See how InsightUK powers better business decisions
-            </p>
-          </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Why Choose Our Platform?
+              </h2>
+              <p className="text-xl text-gray-600">
+                Built for professionals who demand accuracy, speed, and compliance
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            <div className="bg-white p-6 rounded-xl shadow-sm border">
-              <TrendingUp className="w-10 h-10 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Investors & VCs</h3>
-              <p className="text-gray-600 text-sm">Due diligence, portfolio monitoring, and investment research.</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-sm border">
-              <Users className="w-10 h-10 text-purple-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Sales Teams</h3>
-              <p className="text-gray-600 text-sm">Lead qualification, prospect research, and competitive analysis.</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-sm border">
-              <FileText className="w-10 h-10 text-green-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Legal & Compliance</h3>
-              <p className="text-gray-600 text-sm">Corporate verification, compliance monitoring, and legal research.</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-sm border">
-              <Shield className="w-10 h-10 text-orange-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Risk Management</h3>
-              <p className="text-gray-600 text-sm">Credit assessment, fraud prevention, and supplier verification.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold mb-2">5M+</div>
-              <div className="text-blue-100">UK Companies</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">99.9%</div>
-              <div className="text-blue-100">Uptime</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">&lt;2s</div>
-              <div className="text-blue-100">Search Speed</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">24/7</div>
-              <div className="text-blue-100">Support</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Ready to Unlock UK Business Intelligence?
-            </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              Join thousands of professionals who trust InsightUK for their company research needs.
-            </p>
-            
-            {!session ? (
-              <div className="space-y-4">
-                <UserProfile />
-                <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    Free to start
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-white p-8 rounded-xl shadow-lg">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-blue-600" />
                   </div>
-                  <div className="flex items-center gap-1">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    No credit card required
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Enterprise Security</h3>
+                    <p className="text-sm text-gray-600">Bank-grade data protection</p>
                   </div>
-                  <div className="flex items-center gap-1">
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    Instant access
+                    <span className="text-sm text-gray-700">SOC 2 Type II Certified</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-700">GDPR Compliant</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-700">End-to-end encryption</span>
                   </div>
                 </div>
               </div>
-            ) : (
-              <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg">
-                <Link href="/dashboard">
-                  Access Your Dashboard <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </Button>
-            )}
+
+              <div className="bg-white p-8 rounded-xl shadow-lg">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Regulatory Ready</h3>
+                    <p className="text-sm text-gray-600">Built for compliance teams</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-700">AML/KYC Standards</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-700">Audit trails & reporting</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-700">Export-ready reports</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Final CTA Section */}
+      {!session && (
+        <section className="py-20 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center">
+              <h3 className="text-3xl font-bold mb-6">Ready to Transform Your KYB Process?</h3>
+              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+                Join thousands of compliance professionals who trust our platform for faster, 
+                smarter business verification and risk assessment.
+              </p>
+              
+              <div className="bg-white/10 backdrop-blur-sm p-8 rounded-xl border border-white/20 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-white mb-2">5.2M+</div>
+                    <div className="text-blue-100 text-sm">UK Companies Covered</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-white mb-2">99.9%</div>
+                    <div className="text-blue-100 text-sm">Data Accuracy</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-white mb-2">&lt; 3s</div>
+                    <div className="text-blue-100 text-sm">Average Report Time</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <UserProfile />
+                <Button variant="outline" size="lg" className="px-8 py-3 text-lg bg-white/10 border-white/30 text-white hover:bg-white/20">
+                  Request Demo
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

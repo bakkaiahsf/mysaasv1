@@ -69,8 +69,139 @@ This allows for easy model switching without code changes and ensures consistenc
 The project already includes several shadcn/ui components (button, dialog, avatar, etc.) and follows their design system. Always check the [shadcn/ui documentation](https://ui.shadcn.com/docs/components) for available components before implementing alternatives.
 
 ## What I Want to Build
+
 `/dashboard` - Protected dashboard page (requires authentication)
 would like to build a dashboard. Once a user logs in, the dashboard should allow users to search for the company house or the company name. Let's create a dashboard once users should be able search by company number and company name, which can integrate with the company house API the API key details are provided in .env file to retrieve the company house information, and with the help of AI, we should be able to summarize the information about the retrieved company information
+Landing Page (Search First)
+ -----------------------------------------------------
+|  [Logo]    KYB for UK Businesses                    |
+|-----------------------------------------------------|
+|   [ Search Box: "Enter Company Name or Number" ]    |
+|                                                     |
+|         [ Search Company ]  [ Learn More ]          |
+|                                                     |
+ -----------------------------------------------------
+•	Hero = search box
+•	Simple CTA → pushes to /search
+•	KYC Details replace this button like view more
+•	 
+ 
+2. Search Results example
+ -----------------------------------------------------
+|  [ Back to Search ]                                 |
+|-----------------------------------------------------|
+|   Results for "Tesco"                               |
+|-----------------------------------------------------|
+|   > Tesco PLC (00000000)        Status: Active 🟢   |
+|     Registered Address: ...                         |
+|     [ View KYB Report ]                             |
+|                                                     |
+|   > Tesco Bank Ltd (11111111)   Status: Active 🟢   |
+|     Registered Address: ...                         |
+|     [ View KYB Report ]                             |
+ -----------------------------------------------------
+•	Pull from Companies House Search API
+•	Clear CTA per result → /company/:id
+On clik of view more deails the main Dashboard
+ 
+3. KYB Dashboard (Main Screen)
+
+
+ -----------------------------------------------------
+| Company: Tesco PLC (00000000)       Status: Active 🟢|
+|-----------------------------------------------------|
+|   [ Download PDF Report ]   [ Share Link ]          |
+|-----------------------------------------------------|
+|  [ Overview ]     [ Directors ]   [ Compliance ]    |
+|  [ Risk Summary ]                                    |
+ -----------------------------------------------------
+ and once user click on more details 
+
+ Grid Layout (4 Cards):
+
+ -----------------------------------------------------
+| [ Overview ]                                        |
+|  - Registered Address                               |
+|  - Incorporation Date                               |
+Data source:
+Navigation:
+•	/ → landing/search
+•	/search → autocomplete + list
+•	/company/:id → dashboard
+•	/company/:id/report → exportable view
+
+
+|  - Nature of Business (SIC)                         |
+ -----------------------------------------------------
+| [ Directors & PSCs ]                                |
+|  - John Smith (Director, Active)                    |
+|  - Jane Doe (Resigned, 2021)                        |
+|  - ...                                              |
+ -----------------------------------------------------
+| [ Compliance & Filings ]                            |
+|  - Last Accounts Filed: 2023                        |
+|  - Next Due: 2024-06-30                             |
+|  - Confirmation Statement Overdue: ⚠️               |
+ -----------------------------------------------------
+| [ AI Risk Summary ]                                 |
+|  - "This company shows low risk. Directors stable." |
+|  - Risk Score: 3/10                                 |
+ -----------------------------------------------------
+•	4 modular cards in grid layout (2x2)
+•	Each card clickable for drill-down in V2
+ 
+4. share link: should allow to user to send a consolidated report to 
+ -----------------------------------------------------
+| Tesco PLC (00000000) — KYB Report                   |
+|-----------------------------------------------------|
+| [ Company Overview ]                                |
+| [ Directors & PSCs ]                                |
+| [ Filings ]                                         |
+| [ AI Risk Narrative ]                               |
+|                                                     |
+|   [ Download PDF ]   [ Back to Dashboard ]          |
+ -----------------------------------------------------
+•	Cleaner, printable layout
+•	AI Narrative included
+ 
+🔹  
+🔹 Visual Style References
+•	Search simplicity → Companies House Find & Update
+•	Dashboard modularity → FullCircl / DueDil (https://www.fullcircl.com)
+•	Risk badge + narrative → ComplyAdvantage
+
+|  [ Back to Search ]                                 |
+|-----------------------------------------------------|
+|   Results for "Tesco"                               |
+|-----------------------------------------------------|
+|   > Tesco PLC (00000000)        Status: Active 🟢   |
+|     Registered Address: ...                         |
+|     [ View KYB Report ]                             |
+|                                                     |
+|   > Tesco Bank Ltd (11111111)   Status: Active 🟢   |
+|     Registered Address: ...                         |
+|     [ View KYB Report ]                             |
+ -----------------------------------------------------
+
+## API Liks for the above specified 
+
+Cleaner, printable layout
+
+AI Narrative included
+•  Frontend stack: Vite/React (already in your repo) → Tailwind CSS for modular cards.
+•  
+•  Data sources:
+•	Companies House API endpoints:
+o	/search/companies → for search results
+o	/company/{company_number} → overview
+o	/company/{company_number}/officers → directors
+o	/company/{company_number}/filing-history → filings
+o	/company/{company_number}/persons-with-significant-control → PSCs
+•  AI Layer:
+•	Fetch raw data → pass into GPT (or other LLM) → generate risk summary.
+•	Cache/store report for PDF export.
+•
+
 
 ## Request
 Please help me transform this boilerplate into my actual application. **You MUST completely replace all existing boilerplate code** to match my project requirements. The current implementation is just temporary scaffolding that should be entirely removed and replaced.

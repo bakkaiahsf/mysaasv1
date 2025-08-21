@@ -75,25 +75,25 @@ const navigationItems: NavigationItem[] = [
     children: [
       {
         title: "Market Trends",
-        href: "/dashboard/analytics/trends",
+        href: "/dashboard/market-trends",
         icon: TrendingUp,
         description: "Industry trend analysis",
       },
       {
         title: "Risk Assessment",
-        href: "/dashboard/analytics/risk",
+        href: "/dashboard/risk-assessment",
         icon: AlertTriangle,
         description: "Company risk evaluation",
       },
       {
         title: "Network Analysis",
-        href: "/dashboard/analytics/network",
+        href: "/dashboard/network-analysis",
         icon: Network,
         description: "Business network mapping",
       },
       {
         title: "Geographic Insights",
-        href: "/dashboard/analytics/geographic",
+        href: "/dashboard/geographic-insights",
         icon: MapPin,
         description: "Location-based analysis",
       },
@@ -107,13 +107,13 @@ const navigationItems: NavigationItem[] = [
     children: [
       {
         title: "Saved Reports",
-        href: "/dashboard/reports",
+        href: "/dashboard/saved-reports",
         icon: FileText,
         description: "Your generated reports",
       },
       {
         title: "Templates",
-        href: "/dashboard/reports/templates",
+        href: "/dashboard/templates",
         icon: FileText,
         description: "Report templates",
       },

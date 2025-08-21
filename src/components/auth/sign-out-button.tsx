@@ -1,29 +1,23 @@
 "use client";
 
-import { signOut, useSession } from "@/lib/auth-client";
+import { useAuth } from "@/lib/use-simple-auth";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
 export function SignOutButton() {
-  const { data: session, isPending } = useSession();
-  const router = useRouter();
+  const { user, authenticated, loading, signOut } = useAuth();
 
-  if (isPending) {
+  if (loading) {
     return <Button disabled>Loading...</Button>;
   }
 
-  if (!session) {
+  if (!authenticated || !user) {
     return null;
   }
 
   return (
     <Button
       variant="outline"
-      onClick={async () => {
-        await signOut();
-        router.replace("/");
-        router.refresh();
-      }}
+      onClick={() => signOut("/")}
     >
       Sign out
     </Button>

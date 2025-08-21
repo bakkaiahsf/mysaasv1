@@ -1,14 +1,14 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import { useSession } from "@/lib/auth-client";
+import { useAuth } from "@/lib/use-simple-auth";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
-  const { data: session, isPending, error } = useSession();
+function AuthDebug({ children }: { children: ReactNode }) {
+  const { user, authenticated, loading } = useAuth();
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
   useEffect(() => {
@@ -16,20 +16,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (process.env.NODE_ENV === 'development') {
       setDebugInfo({
         baseURL: typeof window !== 'undefined' ? window.location.origin : 'server-side',
-        session: session ? 'authenticated' : 'not authenticated',
-        isPending,
-        error: error?.message,
+        session: user ? 'authenticated' : 'not authenticated',
+        loading,
+        authenticated,
         timestamp: new Date().toISOString(),
       });
       
       console.log('Auth Debug Info:', {
         baseURL: typeof window !== 'undefined' ? window.location.origin : 'server-side',
-        session: session ? 'authenticated' : 'not authenticated',
-        isPending,
-        error: error?.message,
+        session: user ? 'authenticated' : 'not authenticated',
+        loading,
+        authenticated,
       });
     }
-  }, [session, isPending, error]);
+  }, [user, loading, authenticated]);
 
   // Show debug info in development
   if (process.env.NODE_ENV === 'development' && debugInfo) {
@@ -39,11 +39,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
         <div className="fixed bottom-4 right-4 bg-black text-white p-2 rounded text-xs max-w-xs opacity-75">
           <div>Auth: {debugInfo.session}</div>
           <div>URL: {debugInfo.baseURL}</div>
-          {debugInfo.error && <div className="text-red-300">Error: {debugInfo.error}</div>}
+          <div>Auth: {debugInfo.authenticated ? 'Yes' : 'No'}</div>
         </div>
       </>
     );
   }
 
   return <>{children}</>;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  return (
+    <AuthDebug>
+      {children}
+    </AuthDebug>
+  );
 }

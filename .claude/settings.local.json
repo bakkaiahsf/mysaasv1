@@ -1,11 +1,20 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__context7__resolve-library-id",
+      "Bash(curl:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx tsc:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm --version)",
+      "Bash(npx next dev:*)",
+      "Bash(mkdir:*)"
+    ]
+  },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "context7"
-  ],
-  "permissions": {
-    "allow": [
-      "mcp__context7__resolve-library-id"
-    ]
-  }
+  ]
 }

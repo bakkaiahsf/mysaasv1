@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signIn, signOut } from "@/lib/auth-client";
+import { useSession, signIn, signOut } from "@/lib/use-simple-auth";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
@@ -13,8 +13,8 @@ export default function TestAuthPage() {
     const info = {
       session: session ? "✅ Session exists" : "❌ No session",
       isPending: isPending ? "⏳ Loading" : "✅ Ready",
-      signInFunction: signIn ? "✅ signIn available" : "❌ signIn missing",
-      signInSocial: signIn?.social ? "✅ signIn.social available" : "❌ signIn.social missing",
+      signInFunction: typeof signIn === 'function' ? "✅ signIn available" : "❌ signIn missing",
+      signInSocial: typeof signIn?.social === 'function' ? "✅ signIn.social available" : "❌ signIn.social missing",
       currentURL: typeof window !== 'undefined' ? window.location.href : "server-side",
       timestamp: new Date().toISOString(),
     };

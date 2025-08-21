@@ -23,7 +23,7 @@ import {
   Info
 } from "lucide-react";
 import { CompanySearchResult, CompanyProfile } from "@/lib/companies-house";
-import { NetworkGraphVisualization } from "@/components/network-graph";
+import { NetworkGraph } from "@/components/network-graph";
 import { OwnershipStructureVisualization } from "@/components/ownership-structure";
 import { RiskHeatmapVisualization } from "@/components/risk-heatmap";
 import { TimelineVisualization } from "@/components/timeline-visualization";
@@ -383,14 +383,9 @@ export function CompanyDetails({ company, onBack }: CompanyDetailsProps) {
 
         {/* Network Analysis Tab */}
         <TabsContent value="network" className="mt-6">
-          <NetworkGraphVisualization
-            companyNumber={company.company_number}
-            onNodeClick={(node) => {
-              console.log('Node clicked:', node);
-            }}
-            onEdgeClick={(edge) => {
-              console.log('Edge clicked:', edge);
-            }}
+          <NetworkGraph
+            data={{ companyNumber: company.company_number }}
+            className="w-full"
           />
         </TabsContent>
 
@@ -412,22 +407,16 @@ export function CompanyDetails({ company, onBack }: CompanyDetailsProps) {
         {/* Timeline Tab */}
         <TabsContent value="timeline" className="mt-6">
           <TimelineVisualization
-            entityType="company"
-            entityId={company.company_number}
-            onEventClick={(event) => {
-              console.log('Timeline event clicked:', event);
-            }}
+            data={[]}
+            className="w-full"
           />
         </TabsContent>
 
         {/* Geographic Analysis Tab */}
         <TabsContent value="geographic" className="mt-6">
           <GeographicMapping
-            entityType="company"
-            entityId={company.company_number}
-            onAddressClick={(address) => {
-              console.log('Address clicked:', address);
-            }}
+            companies={[]}
+            className="w-full"
           />
         </TabsContent>
       </Tabs>

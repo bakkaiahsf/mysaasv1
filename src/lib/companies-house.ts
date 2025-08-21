@@ -11,8 +11,12 @@ export interface CompanySearchResult {
     postal_code?: string;
     country?: string;
   };
+  address_snippet?: string;
   description?: string;
   kind?: string;
+  links?: {
+    self?: string;
+  };
 }
 
 export interface CompanyProfile {
@@ -60,7 +64,7 @@ export interface SearchResponse {
   total_results: number;
 }
 
-class CompaniesHouseAPI {
+export class CompaniesHouseAPI {
   private baseUrl = 'https://api.company-information.service.gov.uk';
   private apiKey: string;
 
@@ -111,6 +115,11 @@ class CompaniesHouseAPI {
 
   async getCompanyFilingHistory(companyNumber: string, itemsPerPage: number = 25) {
     const endpoint = `/company/${companyNumber}/filing-history?items_per_page=${itemsPerPage}`;
+    return this.makeRequest(endpoint);
+  }
+
+  async getCompanyPSCs(companyNumber: string, itemsPerPage: number = 35) {
+    const endpoint = `/company/${companyNumber}/persons-with-significant-control?items_per_page=${itemsPerPage}`;
     return this.makeRequest(endpoint);
   }
 }
