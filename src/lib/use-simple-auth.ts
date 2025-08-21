@@ -99,3 +99,23 @@ export function useSession() {
     isAuthenticated: auth.authenticated,
   };
 }
+
+// Standalone helper functions for components that need them
+export function signIn(callbackUrl = '/dashboard') {
+  window.location.href = `/api/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+}
+
+export async function signOut(callbackUrl = '/') {
+  try {
+    await fetch('/api/auth/signout', {
+      method: 'POST',
+      credentials: 'include',
+    });
+    
+    window.location.href = callbackUrl;
+  } catch (error) {
+    console.error('Sign out failed:', error);
+    // Force redirect even if API fails
+    window.location.href = callbackUrl;
+  }
+}

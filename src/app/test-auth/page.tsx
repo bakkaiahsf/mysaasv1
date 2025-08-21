@@ -1,32 +1,32 @@
 "use client";
 
-import { useSession, signIn, signOut } from "@/lib/use-simple-auth";
+import { useAuth } from "@/lib/use-simple-auth";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 export default function TestAuthPage() {
-  const { data: session, isPending } = useSession();
+  const { user, authenticated, loading, signIn, signOut } = useAuth();
   const [debugInfo, setDebugInfo] = useState<any>({});
   const [testResult, setTestResult] = useState<string>("");
 
   useEffect(() => {
     const info = {
-      session: session ? "✅ Session exists" : "❌ No session",
-      isPending: isPending ? "⏳ Loading" : "✅ Ready",
+      session: authenticated ? "✅ Session exists" : "❌ No session",
+      isPending: loading ? "⏳ Loading" : "✅ Ready",
       signInFunction: typeof signIn === 'function' ? "✅ signIn available" : "❌ signIn missing",
-      signInSocial: typeof signIn?.social === 'function' ? "✅ signIn.social available" : "❌ signIn.social missing",
+      user: user ? `✅ User: ${user.name}` : "❌ No user",
       currentURL: typeof window !== 'undefined' ? window.location.href : "server-side",
       timestamp: new Date().toISOString(),
     };
     setDebugInfo(info);
     console.log("Auth Test Debug:", info);
-  }, [session, isPending]);
+  }, [authenticated, loading, user]);
 
   const testDirectAuth = async () => {
     try {
       setTestResult("🧪 Testing direct auth...");
       const baseURL = typeof window !== 'undefined' ? window.location.origin : '';
-      const authURL = `${baseURL}/api/auth/signin/google?callbackUrl=${encodeURIComponent('/test-auth')}`;
+      const authURL = `${baseURL}/api/auth/signin?callbackUrl=${encodeURIComponent('/test-auth')}`;
       setTestResult(`🔗 Redirecting to: ${authURL}`);
       window.location.href = authURL;
     } catch (err) {
@@ -34,25 +34,13 @@ export default function TestAuthPage() {
     }
   };
 
-  const testBetterAuth = async () => {
+  const testGoogleAuth = async () => {
     try {
-      setTestResult("🧪 Testing Better Auth...");
-      console.log("Testing signIn.social...");
-      
-      if (!signIn?.social) {
-        setTestResult("❌ signIn.social not available");
-        return;
-      }
-
-      const result = await signIn.social({
-        provider: "google",
-        callbackURL: "/test-auth",
-      });
-      
-      setTestResult(`✅ Better Auth result: ${JSON.stringify(result)}`);
+      setTestResult("🧪 Testing Google OAuth...");
+      signIn('/test-auth');
     } catch (err) {
-      setTestResult(`❌ Better Auth error: ${err}`);
-      console.error("Better Auth error:", err);
+      setTestResult(`❌ Google Auth error: ${err}`);
+      console.error("Google Auth error:", err);
     }
   };
 
@@ -71,12 +59,12 @@ export default function TestAuthPage() {
       {/* Session Status */}
       <div className="bg-blue-50 p-4 rounded-lg mb-6">
         <h2 className="font-semibold mb-2">👤 Session Status:</h2>
-        {isPending && <p>⏳ Loading session...</p>}
-        {!isPending && !session && <p>❌ Not signed in</p>}
-        {!isPending && session && (
+        {loading && <p>⏳ Loading session...</p>}
+        {!loading && !authenticated && <p>❌ Not signed in</p>}
+        {!loading && authenticated && user && (
           <div>
-            <p>✅ Signed in as: {session.user?.name || session.user?.email}</p>
-            <p>📧 Email: {session.user?.email}</p>
+            <p>✅ Signed in as: {user.name || user.email}</p>
+            <p>📧 Email: {user.email}</p>
             <Button onClick={() => signOut()} className="mt-2">
               Sign Out
             </Button>
@@ -85,15 +73,15 @@ export default function TestAuthPage() {
       </div>
 
       {/* Test Buttons */}
-      {!session && (
+      {!authenticated && (
         <div className="space-y-4">
           <h2 className="font-semibold">🔧 Test Authentication Methods:</h2>
           
           <Button 
-            onClick={testBetterAuth}
+            onClick={testGoogleAuth}
             className="mr-4 bg-blue-600 hover:bg-blue-700"
           >
-            🧪 Test Better Auth
+            🧪 Test Google OAuth
           </Button>
           
           <Button 
