@@ -6,9 +6,9 @@ export async function GET() {
       message: "Auth test endpoint working",
       timestamp: new Date().toISOString(),
       env: {
-        hasGoogleClientId: \!\!process.env.GOOGLE_CLIENT_ID,
-        hasBetterAuthSecret: \!\!process.env.BETTER_AUTH_SECRET,
-        hasPostgresUrl: \!\!process.env.POSTGRES_URL,
+        hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
+        hasBetterAuthSecret: !!process.env.BETTER_AUTH_SECRET,
+        hasPostgresUrl: !!process.env.POSTGRES_URL,
       }
     });
   } catch (error) {
@@ -19,4 +19,3 @@ export async function GET() {
     }, { status: 500 });
   }
 }
-EOF < /dev/null
